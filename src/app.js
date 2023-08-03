@@ -4,7 +4,6 @@ const bodyParser = require("body-parser");
 
 const config = require("./config/config");
 const logger = require("./utils/logger");
-const routers = require("./routes/routes");
 const db = require("./database/connection");
 const modelRouter = require("./app/models/model.router");
 const authRouter = require("./app/auth/auth.router");
