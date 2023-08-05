@@ -1,5 +1,7 @@
+const { default: mongoose } = require("mongoose");
 const ModelColumn = require("../../models/modelColumn.model");
 const Model = require("../../models/models.model");
+const NotFoundException = require("../../common/exception/NotFound.exception");
 
 class ModelService {
   getAllModels() {
@@ -24,6 +26,31 @@ class ModelService {
     await session.commitTransaction();
 
     return newColumns;
+  }
+
+  async getModel(modelId) {
+    const model = await Model.findOne(
+      {
+        _id: modelId,
+      },
+      { __v: 0 }
+    );
+
+    if (model) {
+      const columns = await ModelColumn.find(
+        { modelId: model._id },
+        { __v: 0, modelId: 0 }
+      ).exec();
+
+      const result = {
+        model,
+        columns,
+      };
+
+      return result;
+    } else {
+      throw new NotFoundException("model not found");
+    }
   }
 }
 

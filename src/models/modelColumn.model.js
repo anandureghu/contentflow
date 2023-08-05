@@ -2,7 +2,7 @@ const { Schema, default: mongoose } = require("mongoose");
 
 const modelColumnSchema = new Schema({
   modelId: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true,
   },
   column: {

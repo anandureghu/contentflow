@@ -5,7 +5,7 @@ const modelController = new ModelController();
 modelRouter.get("/", modelController.GetAllModels);
 modelRouter.post("/", modelController.CreateModel);
 
-modelRouter.get("/:model", modelController.GetModel);
+modelRouter.get("/:modelId", modelController.GetModel);
 modelRouter.put("/:model", modelController.UpdateModel);
 modelRouter.delete("/:model", modelController.DeleteModel);
 

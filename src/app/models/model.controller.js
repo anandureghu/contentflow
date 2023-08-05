@@ -1,8 +1,10 @@
 const httpStatus = require("http-status");
-const { GetAllModelsDto } = require("./dto");
+const { GetAllModelsDto, CreateModelDto, GetModelDto } = require("./dto");
 const ModelService = require("./model.service");
 const InternalServerError = require("../../common/dto/internalError.dto");
 const { db } = require("../../database/connection");
+const { validateModelId } = require("../../validations/model.validation");
+const { handleError } = require("../../common/exception/handle.exception");
 
 const modelService = new ModelService();
 
@@ -29,7 +31,7 @@ class ModelController {
     try {
       session.startTransaction();
       const columns = await modelService.createModel(params, session);
-      const response = new GetAllModelsDto(
+      const response = new CreateModelDto(
         httpStatus.CREATED,
         "success",
         columns
@@ -44,7 +46,19 @@ class ModelController {
       res.status(response.code).send(response);
     }
   }
-  GetModel(req, res) {}
+
+  async GetModel(req, res) {
+    const modelId = req.params.modelId;
+    try {
+      validateModelId(modelId);
+      const model = await modelService.getModel(modelId);
+      const response = new GetModelDto(httpStatus.OK, "success", model);
+      res.status(response.code).send(response);
+    } catch (error) {
+      handleError(error, res);
+    }
+  }
+
   UpdateModel(req, res) {}
   DeleteModel(req, res) {}
   GetModelData(req, res) {}
