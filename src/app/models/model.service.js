@@ -13,13 +13,14 @@ class ModelService {
       { column: "updatedAt", type: "date" },
     ];
 
-    const model = await Model.create([{ name: name?.toLowerCase() }], {
+    const newColumns = {};
+    newColumns.model = await Model.create([{ name: name?.toLowerCase() }], {
       session,
     });
 
-    allColumns.forEach((column) => (column.modelId = model[0].id));
+    allColumns.forEach((column) => (column.modelId = newColumns.model[0].id));
 
-    const newColumns = await ModelColumn.create(allColumns, { session });
+    newColumns.columns = await ModelColumn.create(allColumns, { session });
     await session.commitTransaction();
 
     return newColumns;

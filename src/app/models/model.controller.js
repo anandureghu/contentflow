@@ -29,9 +29,11 @@ class ModelController {
     try {
       session.startTransaction();
       const columns = await modelService.createModel(params, session);
-      const response = new GetAllModelsDto(httpStatus.CREATED, "success", {
-        columns,
-      });
+      const response = new GetAllModelsDto(
+        httpStatus.CREATED,
+        "success",
+        columns
+      );
       res.status(response.code).send(response);
     } catch (error) {
       await session.abortTransaction();
