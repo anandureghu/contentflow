@@ -10,7 +10,7 @@ modelRouter.put("/:model", modelController.UpdateModel);
 modelRouter.delete("/:model", modelController.DeleteModel);
 
 modelRouter.post("/:model", modelController.CreateModelData);
-modelRouter.get("/:model:modelRowId", modelController.GetModelData);
+modelRouter.get("/:modelId/:modelRowId", modelController.GetModelRowData);
 modelRouter.put("/:model", modelController.UpdateModelData);
 modelRouter.delete("/:model", modelController.DeleteModelData);
 

@@ -72,7 +72,22 @@ class ModelController {
 
   UpdateModel(req, res) {}
   DeleteModel(req, res) {}
-  GetModelData(req, res) {}
+
+  async GetModelRowData(req, res) {
+    const modelId = req.params.modelId;
+    const modelRowId = req.params.modelRowId;
+    try {
+      validateModelId(modelId);
+      validateModelId(modelRowId);
+      let data;
+      data = await modelService.getModelData(modelId, modelRowId);
+      const response = new GetModelDto(httpStatus.OK, "success", data);
+      res.status(response.code).send(response);
+    } catch (error) {
+      handleError(error, res);
+    }
+  }
+
   CreateModelData(req, res) {}
   UpdateModelData(req, res) {}
   DeleteModelData(req, res) {}

@@ -54,9 +54,20 @@ class ModelService {
     }
   }
 
-  async getModelData(modelId) {
+  async getModelRowData(modelId) {
     const modelData = await ModelData.find({ modelId }, { __v: 0, modelId: 0 });
     return modelData;
+  }
+
+  async getModelRowData(modelId, modelRowId) {
+    const modelRowData = await ModelData.find(
+      { modelId, _id: modelRowId },
+      { __v: 0, modelId: 0 }
+    );
+    if(!modelRowData){
+      throw new NotFoundException()
+    }
+    return modelRowData;
   }
 }
 
