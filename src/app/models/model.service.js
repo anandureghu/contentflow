@@ -2,6 +2,7 @@ const { default: mongoose } = require("mongoose");
 const ModelColumn = require("../../models/modelColumn.model");
 const Model = require("../../models/models.model");
 const NotFoundException = require("../../common/exception/NotFound.exception");
+const ModelData = require("../../models/modelData.model");
 
 class ModelService {
   getAllModels() {
@@ -51,6 +52,11 @@ class ModelService {
     } else {
       throw new NotFoundException("model not found");
     }
+  }
+
+  async getModelData(modelId) {
+    const modelData = await ModelData.find({ modelId }, { __v: 0, modelId: 0 });
+    return modelData;
   }
 }
 

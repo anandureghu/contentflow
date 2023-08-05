@@ -1,5 +1,10 @@
 const httpStatus = require("http-status");
-const { GetAllModelsDto, CreateModelDto, GetModelDto } = require("./dto");
+const {
+  GetAllModelsDto,
+  CreateModelDto,
+  GetModelDto,
+  GetModelDataDto,
+} = require("./dto");
 const ModelService = require("./model.service");
 const InternalServerError = require("../../common/dto/internalError.dto");
 const { db } = require("../../database/connection");
@@ -49,10 +54,16 @@ class ModelController {
 
   async GetModel(req, res) {
     const modelId = req.params.modelId;
+    const properties = req.query.properties;
     try {
       validateModelId(modelId);
-      const model = await modelService.getModel(modelId);
-      const response = new GetModelDto(httpStatus.OK, "success", model);
+      let data;
+      if (properties === "true") {
+        data = await modelService.getModel(modelId);
+      } else {
+        data = await modelService.getModelData(modelId);
+      }
+      const response = new GetModelDto(httpStatus.OK, "success", data);
       res.status(response.code).send(response);
     } catch (error) {
       handleError(error, res);

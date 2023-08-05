@@ -1,8 +1,12 @@
 const { Schema, default: mongoose } = require("mongoose");
 
 const modelDataSchema = new Schema({
+  modelId: {
+    type: Schema.Types.ObjectId,
+    required: true,
+  },
   columnId: {
-    type: Schema.Types.UUID,
+    type: Schema.Types.ObjectId,
     required: true,
   },
   data: {
