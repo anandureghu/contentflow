@@ -2,16 +2,16 @@ const { Schema, default: mongoose } = require("mongoose");
 
 const modelColumnSchema = new Schema({
   modelId: {
-    type: Schema.Types.UUID,
-    require: true,
+    type: String,
+    required: true,
   },
   column: {
     type: String,
-    require: true,
+    required: true,
   },
   type: {
     type: String,
-    enum: ["int", "text", "boolean", "date"],
+    enum: ["int", "string", "boolean", "date"],
   },
 });
 

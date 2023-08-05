@@ -3,7 +3,7 @@ const { Schema, default: mongoose } = require("mongoose");
 const modelDataSchema = new Schema({
   columnId: {
     type: Schema.Types.UUID,
-    require: true,
+    required: true,
   },
   data: {
     type: Schema.Types.Mixed,

@@ -1,7 +1,8 @@
-class InternalServerError {
+const ErrorDto = require("./error.dto");
+
+class InternalServerError extends ErrorDto {
   constructor(code, msg) {
-    this.code = code;
-    this.msg = msg;
+    super(code, msg);
   }
 }
 

@@ -3,8 +3,12 @@ const config = require("../config/config");
 const logger = require("../utils/logger");
 
 async function connect() {
+  logger.info("connecting to database");
   mongoose
-    .connect(config.db.mongo_url)
+    .connect(config.db.mongo_url, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
     .then(() => {
       logger.info("connected to database successfully");
     })

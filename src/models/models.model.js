@@ -3,7 +3,8 @@ const { Schema, default: mongoose } = require("mongoose");
 const modelSchema = new Schema({
   name: {
     type: String,
-    require: true,
+    required: true,
+    unique: true,
   },
 });
 
