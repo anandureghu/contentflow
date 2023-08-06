@@ -16,9 +16,9 @@ class AuthService {
     if (!isPasswordMatching(password, user.password)) {
       throw new BadRequestException("invalid password");
     } else {
-      const payload = user.toObject();
-      delete payload.password;
-      return signToken(payload);
+      const userWithoutPassword = user.toObject();
+      delete userWithoutPassword.password;
+      return signToken({ user: userWithoutPassword });
     }
   }
 
