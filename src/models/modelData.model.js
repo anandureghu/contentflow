@@ -1,7 +1,7 @@
 const { Schema, default: mongoose } = require("mongoose");
 
 const modelDataSchema = new Schema({
-  modelId: {
+  rowId: {
     type: Schema.Types.ObjectId,
     required: true,
   },

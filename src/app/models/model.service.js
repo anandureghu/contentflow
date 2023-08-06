@@ -3,6 +3,7 @@ const ModelColumn = require("../../models/modelColumn.model");
 const Model = require("../../models/models.model");
 const NotFoundException = require("../../common/exception/NotFound.exception");
 const ModelData = require("../../models/modelData.model");
+const ModelRow = require("../../models/modelRow.model");
 
 class ModelService {
   getAllModels() {
@@ -54,9 +55,33 @@ class ModelService {
     }
   }
 
-  async getModelRowData(modelId) {
-    const modelData = await ModelData.find({ modelId }, { __v: 0, modelId: 0 });
-    return modelData;
+  async getModelData(modelId) {
+    const modelRows = await ModelRow.find({ modelId }, { __v: 0, modelId: 0 });
+    const view = modelRows.reduce((newModelRows, row) => {
+      newModelRows[row.id] = {
+        _id: row.id,
+        createdAt: row.createdAt,
+        updatedAt: row.updatedAt,
+      };
+      return newModelRows;
+    }, {});
+    let newView = {
+      ...view,
+    };
+    for (let i = 0; i < modelRows.length; i++) {
+      const row = modelRows[i];
+      const modelData = await ModelData.find({ rowId: row.id });
+      newView = {
+        ...newView,
+        [row.id]: {
+          ...newView[row.id],
+          data: modelData,
+        },
+      };
+
+      console.log(newView);
+    }
+    return newView;
   }
 
   async getModelRowData(modelId, modelRowId) {
@@ -64,10 +89,18 @@ class ModelService {
       { modelId, _id: modelRowId },
       { __v: 0, modelId: 0 }
     );
-    if(!modelRowData){
-      throw new NotFoundException()
+    if (!modelRowData) {
+      throw new NotFoundException();
     }
     return modelRowData;
+  }
+
+  async createModelData(modelId, data, session) {
+    const modelRow = await ModelRow.create([{ modelId }], { session });
+    data.forEach((data) => (data.rowId = modelRow[0].id));
+    const datas = await ModelData.create(data, { session });
+    await session.commitTransaction();
+    return datas;
   }
 }
 

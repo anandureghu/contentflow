@@ -1,12 +1,15 @@
 const httpStatus = require("http-status");
 const logger = require("../../utils/logger");
+const InternalServerError = require("../dto/internalError.dto");
 
 exports.handleError = (error, res) => {
+  logger.error(error);
   if (res) {
-    res
-      .status(error.code ? error.code : httpStatus.INTERNAL_SERVER_ERROR)
-      .send(error);
-  } else {
-    logger.error(error);
+    try {
+      res.status(error.code).send(error);
+    } catch (err) {
+      const response = new InternalServerError(error.message, error);
+      res.status(response.code).send(response);
+    }
   }
 };

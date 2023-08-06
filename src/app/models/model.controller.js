@@ -80,7 +80,7 @@ class ModelController {
       validateModelId(modelId);
       validateModelId(modelRowId);
       let data;
-      data = await modelService.getModelData(modelId, modelRowId);
+      data = await modelService.getModelRowData(modelId, modelRowId);
       const response = new GetModelDto(httpStatus.OK, "success", data);
       res.status(response.code).send(response);
     } catch (error) {
@@ -88,7 +88,30 @@ class ModelController {
     }
   }
 
-  CreateModelData(req, res) {}
+  async CreateModelData(req, res) {
+    const modelId = req.params.modelId;
+    const data = req.body;
+    const session = await db.startSession();
+    try {
+      validateModelId(modelId);
+      session.startTransaction();
+      const columns = await modelService.createModelData(
+        modelId,
+        data,
+        session
+      );
+      const response = new CreateModelDto(
+        httpStatus.CREATED,
+        "success",
+        columns
+      );
+      res.status(response.code).send(response);
+    } catch (error) {
+      await session.abortTransaction();
+      handleError(error, res);
+    }
+  }
+
   UpdateModelData(req, res) {}
   DeleteModelData(req, res) {}
 }
