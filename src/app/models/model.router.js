@@ -6,12 +6,12 @@ modelRouter.get("/", modelController.GetAllModels);
 modelRouter.post("/", modelController.CreateModel);
 
 modelRouter.get("/:modelId", modelController.GetModel);
-modelRouter.put("/:model", modelController.UpdateModel);
-modelRouter.delete("/:model", modelController.DeleteModel);
+modelRouter.put("/:modelId", modelController.UpdateModel);
+modelRouter.delete("/:modelId", modelController.DeleteModel);
 
 modelRouter.post("/:modelId", modelController.CreateModelData);
 modelRouter.get("/:modelId/:modelRowId", modelController.GetModelRowData);
-modelRouter.put("/:model", modelController.UpdateModelData);
-modelRouter.delete("/:model", modelController.DeleteModelData);
+modelRouter.put("/:modelId/:", modelController.UpdateModelData);
+modelRouter.delete("/:modelId", modelController.DeleteModelData);
 
 module.exports = modelRouter;
