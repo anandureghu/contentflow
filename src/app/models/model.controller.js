@@ -10,6 +10,7 @@ const InternalServerError = require("../../common/dto/internalError.dto");
 const { db } = require("../../database/connection");
 const { validateModelId } = require("../../validations/model.validation");
 const { handleError } = require("../../common/exception/handle.exception");
+const Response = require("../../common/dto/response.dto");
 
 const modelService = new ModelService();
 
@@ -70,8 +71,34 @@ class ModelController {
     }
   }
 
-  UpdateModel(req, res) {}
-  DeleteModel(req, res) {}
+  async UpdateModel(req, res) {
+    const modelId = req.params.modelId;
+    const updatedModel = req.body;
+    try {
+      validateModelId(modelId);
+      const updatedData = await modelService.updateModel(modelId, updatedModel);
+      const response = new Response(httpStatus.OK, "success", updatedData);
+      res.status(response.code).send(response);
+    } catch (error) {
+      handleError(error, res);
+    }
+  }
+
+  async DeleteModel(req, res) {
+    const modelId = req.params.modelId;
+    try {
+      validateModelId(modelId);
+      await modelService.deleteModel(modelId);
+      const response = new Response(
+        httpStatus.OK,
+        "success",
+        `Model with ID ${modelId} deleted`
+      );
+      res.status(response.code).send(response);
+    } catch (error) {
+      handleError(error, res);
+    }
+  }
 
   async GetModelRowData(req, res) {
     const modelId = req.params.modelId;
@@ -112,8 +139,49 @@ class ModelController {
     }
   }
 
-  UpdateModelData(req, res) {}
-  DeleteModelData(req, res) {}
+  async UpdateModelData(req, res) {
+    const modelId = req.params.modelId;
+    const data = req.body;
+    const session = await db.startSession();
+    try {
+      validateModelId(modelId);
+      session.startTransaction();
+      const updatedColumns = await modelService.updateModelData(
+        modelId,
+        data,
+        session
+      );
+      const response = new Response(
+        httpStatus.OK,
+        "success",
+        updatedColumns
+      );
+      res.status(response.code).send(response);
+    } catch (error) {
+      await session.abortTransaction();
+      handleError(error, res);
+    }
+  }
+
+  async DeleteModelData(req, res) {
+    const modelId = req.params.modelId;
+    const dataId = req.params.dataId;
+    const session = await db.startSession();
+    try {
+      validateModelId(modelId);
+      session.startTransaction();
+      await modelService.deleteModelData(modelId, dataId, session);
+      const response = new Response(
+        httpStatus.OK,
+        "success",
+        `Data with ID ${dataId} deleted`
+      );
+      res.status(response.code).send(response);
+    } catch (error) {
+      await session.abortTransaction();
+      handleError(error, res);
+    }
+  }
 }
 
 module.exports = ModelController;

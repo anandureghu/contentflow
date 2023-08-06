@@ -102,6 +102,138 @@ class ModelService {
     await session.commitTransaction();
     return datas;
   }
+
+  async updateModelData(modelId, data, session) {
+    try {
+      const updatedData = [];
+
+      for (let i = 0; i < data.length; i++) {
+        const { dataId, newData } = data[i];
+
+        const modelData = await ModelData.findOneAndUpdate(
+          { modelId, _id: dataId },
+          { $set: newData },
+          { new: true, session }
+        );
+
+        if (!modelData) {
+          throw new NotFoundException(`Model data with ID ${dataId} not found`);
+        }
+
+        updatedData.push(modelData);
+      }
+
+      await session.commitTransaction();
+
+      return updatedData;
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    }
+  }
+
+  async deleteModelData(modelId, dataId, session) {
+    try {
+      const modelData = await ModelData.findOneAndDelete(
+        { modelId, _id: dataId },
+        { session }
+      );
+
+      if (!modelData) {
+        throw new NotFoundException("Model data not found");
+      }
+
+      await session.commitTransaction();
+
+      return modelData;
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    }
+  }
+
+  async deleteModel(modelId) {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      const deletedModel = await Model.findByIdAndDelete(modelId, { session });
+
+      if (!deletedModel) {
+        throw new NotFoundException(`Model with ID ${modelId} not found`);
+      }
+
+      await ModelColumn.deleteMany({ modelId }, { session });
+      await ModelRow.deleteMany({ modelId }, { session });
+      await ModelData.deleteMany({ modelId }, { session });
+
+      await session.commitTransaction();
+      session.endSession();
+
+      return deletedModel;
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+      throw error;
+    }
+  }
+
+  async updateModel(modelId, updatedModel) {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      const existingModel = await Model.findById(modelId).session(session);
+
+      if (!existingModel) {
+        throw new NotFoundException(`Model with ID ${modelId} not found`);
+      }
+
+      const updatedColumns = [];
+      if (updatedModel.name) {
+        existingModel.name = updatedModel.name.toLowerCase();
+      }
+
+      if (updatedModel.columns && Array.isArray(updatedModel.columns)) {
+        const existingColumns = await ModelColumn.find({ modelId }, null, {
+          session,
+        });
+
+        for (const updatedColumn of updatedModel.columns) {
+          const existingColumn = existingColumns.find(
+            (col) => col._id.toString() === updatedColumn.columnId
+          );
+
+          if (!existingColumn) {
+            throw new NotFoundException(
+              `Column with ID ${updatedColumn.columnId} not found`
+            );
+          }
+
+          if (updatedColumn.name) {
+            existingColumn.name = updatedColumn.name;
+          }
+          if (updatedColumn.type) {
+            existingColumn.type = updatedColumn.type;
+          }
+
+          updatedColumns.push(existingColumn.save());
+        }
+      }
+
+      await Promise.all(updatedColumns);
+      await existingModel.save();
+
+      await session.commitTransaction();
+      session.endSession();
+
+      return existingModel;
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+      throw error;
+    }
+  }
 }
 
 module.exports = ModelService;
