@@ -29,11 +29,7 @@ Build a media library within ContentFlowto manage files. This should support the
 basePath = http://localhost:3000/api/v1
 ```
 
----
-
 ## **Auth**
-
----
 
 ### **POST** `/auth/register`
 
@@ -43,11 +39,7 @@ register a user
 
 login user
 
----
-
 ## **Model**
-
----
 
 ### **GET** `/models`
 
@@ -85,11 +77,7 @@ update a model data
 
 delete a model data
 
----
-
 ## **User**
-
----
 
 ### **GET** `/users`
 
@@ -121,6 +109,7 @@ delete a user
   data: {} | []
 }
 ```
+
 ```
 # error response
 {
