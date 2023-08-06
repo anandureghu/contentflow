@@ -49,7 +49,6 @@ function isPasswordMatching(password, hash) {
 
 function signToken(payload) {
   var token = jwt.sign(payload, config.app.jwt_secret);
-  console.log(token);
   return token;
 }
 

@@ -79,7 +79,6 @@ class ModelService {
         },
       };
 
-      console.log(newView);
     }
     return newView;
   }
