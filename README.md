@@ -25,8 +25,9 @@ Build a media library within ContentFlowto manage files. This should support the
 
 # API Design
 
+### Base Path
 ```
-basePath = http://localhost:3000/api/v1
+http://localhost:3000/api/v1
 ```
 
 ## **Auth**
