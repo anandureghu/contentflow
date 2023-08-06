@@ -1,0 +1,50 @@
+version: "3"
+services:
+  mongodb1:
+    image: mongo
+    container_name: mongodb1
+    ports:
+      - "27020:27017"
+    command: mongod --replSet rs
+    networks:
+      - app_network
+    logging:
+      driver: none
+
+  mongodb2:
+    image: mongo
+    container_name: mongodb2
+    ports:
+      - "27018:27017"
+    networks:
+      - app_network
+    logging:
+      driver: none
+
+  mongodb3:
+    image: mongo
+    container_name: mongodb3
+    ports:
+      - "27019:27017"
+    networks:
+      - app_network
+    logging:
+      driver: none
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: server
+    depends_on:
+      - mongodb1
+      - mongodb2
+      - mongodb3
+    environment:
+      MONGO_URL: "mongodb://mongodb1:27017,mongodb2:27017,mongodb3:27017/contentflow?replicaSet=rs"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
